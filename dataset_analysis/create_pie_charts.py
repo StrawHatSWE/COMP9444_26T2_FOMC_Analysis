@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import matplotlib
@@ -53,10 +54,12 @@ def count_label_occurrences(input_dir: Path) -> dict[str, int]:
     return counts
 
 
-def build_label_pie_chart(input_dir: Path, output_path: Path) -> None:
+def build_label_pie_chart(input_dir: Path, output_path: Path, title: str = "Label frequency") -> None:
     counts = count_label_occurrences(input_dir)
     labels = ["dovish", "hawkish", "neutral"]
     values = [counts[label] for label in labels]
+
+    print(f"Label counts: {counts}")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -67,7 +70,7 @@ def build_label_pie_chart(input_dir: Path, output_path: Path) -> None:
         startangle=140,
         colors=["#4C78A8", "#F58518", "#54A24B"],
     )
-    ax.set_title("Label frequency")
+    ax.set_title(title)
     ax.axis("equal")
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -78,10 +81,19 @@ def build_label_pie_chart(input_dir: Path, output_path: Path) -> None:
         print(f"{label}: {counts[label]}")
 
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_INPUT_DIR = REPO_ROOT / "dataset" / "test-and-training" / "augmented_data" / "augmented_train_data"
+DEFAULT_OUTPUT_PATH = Path(__file__).resolve().parent / "diagrams" / "label_distribution_augmented_train.png"
+
+
 def main() -> None:
-    input_dir = Path("C:\\git\\fomc-hawkish-dovish\\training_data\\test-and-training\\training_data").expanduser().resolve()
-    output_path = Path(".\\database_analysis\\diagrams\\label_distribution.png").expanduser().resolve()
-    build_label_pie_chart(input_dir, output_path)
+    parser = argparse.ArgumentParser(description="Pie chart of label distribution across xlsx files in a directory.")
+    parser.add_argument("--input-dir", type=Path, default=DEFAULT_INPUT_DIR)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH)
+    parser.add_argument("--title", default="Label frequency (augmented training data)")
+    args = parser.parse_args()
+
+    build_label_pie_chart(args.input_dir.resolve(), args.output.resolve(), args.title)
 
 
 if __name__ == "__main__":

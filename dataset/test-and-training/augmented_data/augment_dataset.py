@@ -8,6 +8,11 @@
 # Synonym Replacement on 75% of the hawkish and dovish data
 #
 # Masking on 30% of all data
+#
+# Before any augmentation, training rows are deduplicated: exact duplicate
+# sentences within a train file are dropped, as are train sentences that also
+# appear in the corresponding test file (train/test leakage). Matching is done
+# on a normalized form (lowercased, whitespace collapsed).
 
 import argparse
 import json
@@ -286,6 +291,24 @@ def _sample(df: pd.DataFrame, frac: float, rng: random.Random) -> pd.DataFrame:
     return df.sample(n=n, random_state=rng.randrange(2**32))
 
 
+def _norm_sentence(s: str) -> str:
+    return re.sub(r"\s+", " ", str(s)).strip().lower()
+
+
+def dedupe_train(df: pd.DataFrame, test_path: Path) -> pd.DataFrame:
+    """Drop intra-train duplicate sentences and train/test overlap."""
+    norm = df["sentence"].map(_norm_sentence)
+    df = df[~norm.duplicated(keep="first")]
+    n_intra = len(norm) - len(df)
+
+    test_sentences = set(pd.read_excel(test_path)["sentence"].map(_norm_sentence))
+    keep = ~df["sentence"].map(_norm_sentence).isin(test_sentences)
+    n_leak = (~keep).sum()
+
+    print(f"  dedup: dropped {n_intra} intra-train duplicates, {n_leak} train/test overlaps")
+    return df[keep].reset_index(drop=True)
+
+
 def augment_train_file(df: pd.DataFrame, rng: random.Random, device: str) -> pd.DataFrame:
     df = df.copy()
     df["augmented"] = 0
@@ -374,6 +397,7 @@ def main():
             rng = random.Random(args.seed)
 
             df = pd.read_excel(path)
+            df = dedupe_train(df, TEST_DIR / path.name.replace("-train-", "-test-"))
             out = augment_train_file(df, rng, args.device)
 
             out.to_excel(OUT_TRAIN_DIR / path.name, index=False)
