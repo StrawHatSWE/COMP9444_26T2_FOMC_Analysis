@@ -67,7 +67,69 @@ The BERT-family experiment did include processing, but these steps are standard 
 
 No data augmentation, additional manual annotation, label modification or augmented test set was used.
 
-### 4.3 BERT-Family Validation Results
+### 4.3 Exact FinBERT Pipeline
+
+The FinBERT run was a standard supervised downstream fine-tuning experiment, not a zero-shot prediction experiment. The sequence was:
+
+1. Load the local or downloaded `ProsusAI/finbert` checkpoint and its matching tokenizer.
+2. Read the shared FOMC sentence/label records and keep the original sample index and year for audit purposes.
+3. Use the fixed seed-`5768` train/validation split for all configuration search candidates.
+4. Tokenise each sentence with truncation and padding, and pass the attention mask to the Transformer.
+5. Replace the original sentiment head with a new three-class head for Dovish, Hawkish and Neutral.
+6. Fine-tune the pretrained model on the FOMC training partition using the candidate training configuration.
+7. Evaluate on the untouched validation partition after each epoch.
+8. Restore the best checkpoint using the validation result and stop early when validation stopped improving.
+
+The original exploratory selection key was validation weighted F1 first, followed by macro F1 and parameter count. Accuracy was recorded for every candidate, but it was not the first selection key in that run. This is important because the later FLAN experiments used validation accuracy as the primary selection metric.
+
+### 4.4 FinBERT Search History
+
+Fifteen controlled FinBERT candidates were run on seed `5768` validation. Each candidate changed a limited part of the training configuration so that the effect of the change could be observed:
+
+| Candidate | Main change | Weighted F1 | Accuracy |
+|---:|---|---:|---:|
+| 1 | control | 0.6613 | 0.6562 |
+| 2 | learning rate `1e-5` | 0.6259 | 0.6247 |
+| 3 | learning rate `3e-5` | 0.6816 | 0.6798 |
+| 4 | dropout `0.2` | 0.6412 | 0.6352 |
+| 5 | dropout `0.3` | 0.6237 | 0.6168 |
+| 6 | dropout `0.2`, learning rate `1e-5` | 0.6114 | 0.6037 |
+| 7 | dropout `0.2`, learning rate `3e-5` | 0.6748 | 0.6693 |
+| 8 | cosine schedule | 0.6585 | 0.6562 |
+| 9 | warm-up ratio `0.2` | 0.6412 | 0.6352 |
+| 10 | weight decay `0` | 0.6615 | 0.6588 |
+| 11 | weight decay `0.05` | 0.6613 | 0.6562 |
+| 12 | label smoothing `0.05` | 0.6661 | 0.6614 |
+| 13 | balanced loss | 0.6696 | 0.6667 |
+| 14 | maximum length `128` | 0.6594 | 0.6562 |
+| 15 | batch size `8`, longer training | **0.6867** | **0.6824** |
+
+The best observed candidate was candidate 15. The result suggests that batch size and sufficient training time mattered, but it does not prove that the setting generalises to the official test distribution because the three-seed test stage was not completed.
+
+### 4.5 Exact DeBERTa Pipeline and Search Status
+
+The DeBERTa experiment followed the same data and training pipeline, but used `microsoft/deberta-v3-base`. Because the base checkpoint did not contain a task-specific FOMC classifier, the classifier and pooler were newly initialised before downstream training. The run tested the control configuration and then changed learning rate and dropout in controlled candidates.
+
+The run was intentionally stopped during candidate 6 after the overlap with the assigned BERT-family work was confirmed:
+
+| Candidate | Main change | Weighted F1 | Accuracy | Status |
+|---:|---|---:|---:|---|
+| 1 | control | **0.7373** | **0.7349** | Completed validation |
+| 2 | learning rate `1e-5` | 0.6679 | 0.6640 | Completed validation |
+| 3 | learning rate `3e-5` | 0.7288 | 0.7270 | Completed validation |
+| 4 | dropout `0.2` | 0.6980 | 0.6903 | Completed validation |
+| 5 | dropout `0.3` | 0.3203 | 0.4882 | Completed validation |
+| 6 | dropout `0.2`, learning rate `1e-5` | 0.5930 | 0.5827 | Run stopped after this result |
+
+The `0.7349` DeBERTa accuracy is therefore a seed-`5768` validation result. It is useful evidence that the model family may be strong, but it is not a final score because no frozen three-seed test evaluation was completed.
+
+### 4.6 Artifact Status and Reproducibility Boundary
+
+The exploratory FinBERT/DeBERTa training script and downloaded checkpoints were removed after the model-family overlap was identified. The current repository keeps the experiment history and this handoff document, but it does not contain the original BERT training script or BERT checkpoint files. The `transformers` package may still be installed in the environment because it is also used by the group's independent Transformer experiments; that does not mean that FinBERT or DeBERTa weights are part of this work package.
+
+This boundary is deliberate: the records preserve what was tested and what was learned, while the final LSTM/BiLSTM work does not claim ownership of another member's BERT-family implementation.
+
+### 4.7 BERT-Family Validation Results
 
 The following results are from seed `5768` validation only. They are not final results from the three official test seeds.
 
@@ -78,7 +140,7 @@ The following results are from seed `5768` validation only. They are not final r
 
 The DeBERTa `73.49%` is validation accuracy. The experiment was stopped during the continued search because the BERT-family direction overlapped with another group member's task. It did not complete the three official test-seed evaluation after configuration freezing. Therefore, `73.49%` must not be presented as the final project generalisation accuracy.
 
-### 4.4 Lessons from the BERT-Family Experiments
+### 4.8 Lessons from the BERT-Family Experiments
 
 1. Pretrained language representations can obtain much stronger validation results than randomly initialised RNNs.
 2. The learning rate matters substantially. The default `2e-5` was not always best, and `3e-5` worked better for some candidates.
