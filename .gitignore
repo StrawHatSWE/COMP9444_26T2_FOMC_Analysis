@@ -1,0 +1,4 @@
+
+# tom pipeline artifacts - model weights and caches stay local
+tom/runs/
+tom/__pycache__/
