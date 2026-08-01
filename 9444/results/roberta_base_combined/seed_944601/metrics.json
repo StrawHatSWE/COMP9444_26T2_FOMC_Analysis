@@ -1,0 +1,16 @@
+{
+  "seed": "944601",
+  "model_name": "roberta_base_combined",
+  "best_epoch": 6,
+  "val_weighted_f1": 0.721504,
+  "test_weighted_f1": 0.695909,
+  "test_macro_f1": 0.683939,
+  "test_accuracy": 0.693277,
+  "test_f1_dovish": 0.645614,
+  "test_f1_hawkish": 0.666667,
+  "test_f1_neutral": 0.739535,
+  "train_time_seconds": 4404.0,
+  "n_train": 1522,
+  "n_val": 381,
+  "n_test": 476
+}

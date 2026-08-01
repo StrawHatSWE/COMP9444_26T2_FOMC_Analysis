@@ -2,3 +2,7 @@
 # tom pipeline artifacts - model weights and caches stay local
 tom/runs/
 tom/__pycache__/
+
+# Python bytecode caches
+__pycache__/
+*.py[cod]
