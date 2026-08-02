@@ -1,0 +1,27 @@
+{
+  "model_name": "roberta_base_combined",
+  "pretrained_checkpoint": "roberta-base",
+  "checkpoint_revision": "main",
+  "training_type": "full_fine_tuning",
+  "tokenizer": "roberta-base",
+  "max_length": 256,
+  "learning_rate": 2e-05,
+  "batch_size": 16,
+  "epochs": 10,
+  "best_epoch": 6,
+  "dropout": 0.1,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "random_seed": 944601,
+  "train_split_file": "data/splits/944601_train.csv",
+  "validation_split_file": "data/splits/944601_val.csv",
+  "test_split_file": "FOMC_dataset_checkpoint/lab-manual-combine-test-944601.xlsx",
+  "use_sentence_split": false,
+  "library_versions": {
+    "transformers": "5.14.1",
+    "torch": "2.13.0+cpu",
+    "sklearn": "1.9.0"
+  },
+  "hardware": "cpu",
+  "platform": "Windows-11-10.0.26200-SP0"
+}
