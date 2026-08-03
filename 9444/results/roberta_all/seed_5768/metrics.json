@@ -1,0 +1,10 @@
+{
+  "seed": "5768",
+  "variant": "roberta_all",
+  "validation_weighted_f1": 0.719801809229708,
+  "best_epoch": 2,
+  "training_seconds": 4892.959595441818,
+  "test_weighted_f1": 0.65139225546678,
+  "test_macro_f1": 0.6324286094022936,
+  "test_accuracy": 0.6533613445378151
+}

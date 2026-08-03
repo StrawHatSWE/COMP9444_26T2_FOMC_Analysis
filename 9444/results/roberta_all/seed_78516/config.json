@@ -1,0 +1,21 @@
+{
+  "variant": {
+    "name": "roberta_all",
+    "use_augmented_data": true,
+    "use_dapt": true,
+    "use_average_weighted_hp_search": true,
+    "use_class_balancing": true,
+    "label_smoothing": 0.1
+  },
+  "data_source": "C:\\Users\\Anthony.Ivanov\\Downloads\\COMP9444_26T2_FOMC_Analysis-main\\COMP9444_26T2_FOMC_Analysis-main\\dataset\\test-and-training\\augmented_data\\augmented_train_data",
+  "validation_data": "original rows only",
+  "test_data": "original unaugmented test split",
+  "learning_rate": 1e-05,
+  "batch_size": 8,
+  "checkpoint": "C:\\Users\\Anthony.Ivanov\\Downloads\\COMP9444_26T2_FOMC_Analysis-main\\COMP9444_26T2_FOMC_Analysis-main\\9444\\results\\roberta_all\\_dapt\\seed_78516",
+  "class_weights": [
+    1.0538617372512817,
+    1.1493488550186157,
+    0.8467034101486206
+  ]
+}

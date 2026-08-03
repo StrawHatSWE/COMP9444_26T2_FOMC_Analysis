@@ -1,0 +1,46 @@
+{
+  "variant": "roberta_all",
+  "learning_rate": 1e-05,
+  "batch_size": 8,
+  "seeds": [
+    "5768",
+    "78516",
+    "944601"
+  ],
+  "test_weighted_f1_mean": 0.6677071077084533,
+  "test_weighted_f1_std": 0.015929949443833927,
+  "test_macro_f1_mean": 0.6541667579740308,
+  "test_accuracy_mean": 0.6659663865546218,
+  "per_seed": [
+    {
+      "seed": "5768",
+      "variant": "roberta_all",
+      "validation_weighted_f1": 0.719801809229708,
+      "best_epoch": 2,
+      "training_seconds": 4892.959595441818,
+      "test_weighted_f1": 0.65139225546678,
+      "test_macro_f1": 0.6324286094022936,
+      "test_accuracy": 0.6533613445378151
+    },
+    {
+      "seed": "78516",
+      "variant": "roberta_all",
+      "validation_weighted_f1": 0.6785266201216162,
+      "best_epoch": 2,
+      "training_seconds": 7646.229595661163,
+      "test_weighted_f1": 0.6893186830470567,
+      "test_macro_f1": 0.6771476072946662,
+      "test_accuracy": 0.6848739495798319
+    },
+    {
+      "seed": "944601",
+      "variant": "roberta_all",
+      "validation_weighted_f1": 0.712837761830063,
+      "best_epoch": 2,
+      "training_seconds": 8321.265773057938,
+      "test_weighted_f1": 0.6624103846115231,
+      "test_macro_f1": 0.6529240572251326,
+      "test_accuracy": 0.6596638655462185
+    }
+  ]
+}
